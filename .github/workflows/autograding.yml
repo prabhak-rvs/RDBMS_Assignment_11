@@ -1,0 +1,39 @@
+name: StudentDetails View Autograding
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  autograding:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Step 1: Checkout student repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Start MySQL
+      - name: Start MySQL
+        run: |
+          sudo systemctl start mysql
+          sudo systemctl status mysql --no-pager
+
+      # Step 3: Create database
+      - name: Create database
+        run: |
+          mysql -u root -e "CREATE DATABASE IF NOT EXISTS StudentDB;"
+
+      # Step 4: Execute starter.sql
+      - name: Setup database
+        run: |
+          mysql -u root StudentDB < starter.sql
+
+      # Step 5: Execute test.sql
+      - name: Run tests
+        run: |
+          mysql -u root StudentDB < test.sql
